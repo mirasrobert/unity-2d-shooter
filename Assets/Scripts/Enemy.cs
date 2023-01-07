@@ -5,32 +5,64 @@ using UnityEngine;
 public class Enemy : Health
 {
     public Transform player;
-
     public float speed = 5f;
-
     public bool isFlipped = false;
 
     public Transform agroPoint;
     public float agroRange = 5f;
     public LayerMask playerLayer;
 
+    public float attackRange = 3f;
+    bool inRangeOfAttack = false;
+    [SerializeField] int attackDamage = 10;
+
+    public float attackCooldown = 0.5f;
+    public float lastAttackTime = 0f;
+
     Rigidbody2D rb;
+    Animator anim;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
     private void FixedUpdate()
     {
-        PlayerSpotted();
+
+        if (player != null)
+            PlayerSpotted();
     }
 
     void ChasePlayer()
     {
-        Vector2 target = new Vector2(player.position.x, rb.position.y);
-        Vector2 newPos = Vector2.MoveTowards(rb.position, target, speed * Time.fixedDeltaTime);
-        rb.MovePosition(newPos);
+        // In Range Of Attack
+        if (Vector2.Distance(player.position, rb.position) <= attackRange)
+        {
+            inRangeOfAttack = true;
+            rb.velocity = new Vector2(0f, rb.position.y);
+
+            // Check if you can attack base on cooldown
+            if(Time.time - lastAttackTime > attackCooldown)
+            {
+                lastAttackTime = Time.time;
+                // Attack
+                anim.SetTrigger("Attack");
+            }
+
+        }
+        else
+        {
+            inRangeOfAttack = false;
+        }
+
+        if (!inRangeOfAttack)
+        {
+            Vector2 target = new Vector2(player.position.x, rb.position.y);
+            Vector2 newPos = Vector2.MoveTowards(rb.position, target, speed * Time.fixedDeltaTime);
+            rb.MovePosition(newPos);
+        }
     }
 
     public void LookAtPlayer()
@@ -54,20 +86,30 @@ public class Enemy : Health
 
     void PlayerSpotted()
     {
-        Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(agroPoint.position, agroRange, playerLayer);
+        Collider2D[] playersCollided = Physics2D.OverlapCircleAll(agroPoint.position, agroRange, playerLayer);
 
-        foreach (Collider2D players in hitPlayers)
+        // Chase Player If in Range
+        foreach (Collider2D players in playersCollided)
         {
             LookAtPlayer();
             ChasePlayer();
         }
+        
     }
+
 
     void OnDrawGizmosSelected()
     {
         if (agroPoint == null) return;
 
         Gizmos.DrawWireSphere(agroPoint.position, agroRange);
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+
+    // Will be used in animation event
+    public void DamagePlayer()
+    {
+        player.GetComponent<Player>().ReduceHealth(attackDamage);
     }
 
 
