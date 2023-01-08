@@ -51,10 +51,13 @@ public class Bullet : MonoBehaviour
             enemy.ReduceHealth(bulletDamage);
         }
 
-
-        impactPrefabClone = Instantiate(impactEffect, transform.position, transform.rotation);
-        Destroy(impactPrefabClone, 0.5f);
-        Destroy(gameObject);
+        // As Long as not collectible then destroy bullet
+        if(!collision.gameObject.CompareTag("Collectible"))
+        {
+            impactPrefabClone = Instantiate(impactEffect, transform.position, transform.rotation);
+            Destroy(impactPrefabClone, 0.5f);
+            Destroy(gameObject);
+        }
     }
 
     private IEnumerator waitAndDestroy(float waitTime)

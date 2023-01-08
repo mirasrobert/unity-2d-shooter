@@ -46,7 +46,7 @@ public class Enemy : Health
 
         baseScale = transform.localScale;
 
-        facingDirection = LEFT;
+        facingDirection = RIGHT;
     }
 
     private void FixedUpdate()
