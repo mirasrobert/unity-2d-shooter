@@ -6,6 +6,8 @@ public class Enemy : Health
 {
     public Transform player;
     public float speed = 5f;
+
+    // IF TRUE THEN DEFAULT IS FACING RIGHT
     public bool isFlipped = false;
 
     public Transform agroPoint;
@@ -15,9 +17,23 @@ public class Enemy : Health
     public float attackRange = 3f;
     bool inRangeOfAttack = false;
     [SerializeField] int attackDamage = 10;
+    public Vector3 attackOffset;
 
     public float attackCooldown = 0.5f;
     public float lastAttackTime = 0f;
+
+    bool inAgroRange = false;
+
+    // Enemy Patrol
+    public Transform castPos;
+    const string LEFT = "left";
+    const string RIGHT = "right";
+
+    public string facingDirection;
+
+    Vector3 baseScale;
+    public float baseCastDist = 0.1f;
+
 
     Rigidbody2D rb;
     Animator anim;
@@ -26,13 +42,57 @@ public class Enemy : Health
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+
+        baseScale = transform.localScale;
+
+        facingDirection = LEFT;
     }
 
     private void FixedUpdate()
     {
-
-        if (player != null)
+        
+        if(player != null)
+        {
             PlayerSpotted();
+
+            if (inAgroRange)
+            {
+
+                Debug.Log("AGRO: TRUE");
+
+                if (facingDirection == LEFT && transform.position.x < player.position.x)
+                {
+                    ChangeFacingDirection(RIGHT);
+                }
+                else if (facingDirection == RIGHT && transform.position.x > player.position.x)
+                {
+                    ChangeFacingDirection(LEFT);
+                }
+
+                ChasePlayer();
+
+            }
+            else
+            {
+                // Do Something Patrol or Stop
+                Debug.Log("AGRO: FALSE");
+
+                Patrol();
+
+                if (IsHittingWall() || IsNearEdge())
+                {
+
+                    if (facingDirection == LEFT)
+                    {
+                        ChangeFacingDirection(RIGHT);
+                    }
+                    else if (facingDirection == RIGHT)
+                    {
+                        ChangeFacingDirection(LEFT);
+                    }
+                }
+            }
+        }
     }
 
     void ChasePlayer()
@@ -41,15 +101,17 @@ public class Enemy : Health
         if (Vector2.Distance(player.position, rb.position) <= attackRange)
         {
             inRangeOfAttack = true;
+
+            // Stop Goblin From Moving
             rb.velocity = new Vector2(0f, rb.position.y);
 
             // Check if you can attack base on cooldown
-            if(Time.time - lastAttackTime > attackCooldown)
+            if (Time.time - lastAttackTime > attackCooldown)
             {
                 lastAttackTime = Time.time;
                 // Attack
                 anim.SetTrigger("Attack");
-            }
+            } 
 
         }
         else
@@ -57,6 +119,7 @@ public class Enemy : Health
             inRangeOfAttack = false;
         }
 
+        // Chase Player if not enough range of attack
         if (!inRangeOfAttack)
         {
             Vector2 target = new Vector2(player.position.x, rb.position.y);
@@ -70,33 +133,118 @@ public class Enemy : Health
         Vector3 flipped = transform.localScale;
         flipped.z *= -1f;
 
-        if(transform.position.x > player.position.x && isFlipped)
+        if (transform.position.x > player.position.x && isFlipped)
         {
             transform.localScale = flipped;
             transform.Rotate(0f, 180f, 0f);
             isFlipped = false;
+            Debug.Log("FACING LEFT");
+            facingDirection = LEFT;
         }
         else if(transform.position.x < player.position.x && !isFlipped)
         {
             transform.localScale = flipped;
             transform.Rotate(0f, 180f, 0f);
             isFlipped = true;
+            Debug.Log("FACING RIGHT");
+            facingDirection = RIGHT;
         }
     }
 
     void PlayerSpotted()
     {
-        Collider2D[] playersCollided = Physics2D.OverlapCircleAll(agroPoint.position, agroRange, playerLayer);
-
-        // Chase Player If in Range
-        foreach (Collider2D players in playersCollided)
+        // Check If Player is in enemy agro range
+        if(Vector2.Distance(player.position, rb.position) <= agroRange)
         {
-            LookAtPlayer();
-            ChasePlayer();
+            inAgroRange = true;
+        } else
+        {
+            inAgroRange = false;
         }
-        
     }
 
+    bool IsHittingWall()
+    {
+        bool val = false;
+
+        float castDist = baseCastDist;
+
+        if(facingDirection == LEFT)
+        {
+            castDist = -baseCastDist;
+        } else
+        {
+            castDist = baseCastDist;
+        }
+        // Determine the target destination based on the cast distance
+        Vector3 targetPos = castPos.position;
+        targetPos.x += castDist;
+
+        Debug.DrawLine(castPos.position, targetPos, Color.blue);
+
+        if(Physics2D.Linecast(castPos.position, targetPos, 1 << LayerMask.NameToLayer("Ground"))) 
+        {
+            val = true;
+        } 
+        else
+        {
+            val = false;
+        }
+
+        return val;
+    }
+
+    bool IsNearEdge()
+    {
+        bool val = true;
+
+        float castDist = baseCastDist;
+
+        // Determine the target destination based on the cast distance
+        Vector3 targetPos = castPos.position;
+        targetPos.y -= castDist; // Shoot Down For Cheking Edges
+
+        Debug.DrawLine(castPos.position, targetPos, Color.red);
+
+        if (Physics2D.Linecast(castPos.position, targetPos, 1 << LayerMask.NameToLayer("Ground")))
+        {
+            val = false;
+        }
+        else
+        {
+            val = true;
+        }
+
+        return val;
+    }
+
+    void Patrol()
+    {
+        float moveSpeed = speed;
+        if (facingDirection == LEFT)
+        {
+            moveSpeed = -speed;
+        }
+
+        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+    }
+
+    void ChangeFacingDirection(string direction)
+    {
+        Vector3 newScale = baseScale;
+
+        if(direction == LEFT)
+        {
+            newScale.x = -baseScale.x;
+        } else if(direction == RIGHT)
+        {
+            newScale.x = baseScale.x;
+        }
+
+        transform.localScale = newScale;
+
+        facingDirection = direction;
+    }
 
     void OnDrawGizmosSelected()
     {
@@ -109,7 +257,19 @@ public class Enemy : Health
     // Will be used in animation event
     public void DamagePlayer()
     {
-        player.GetComponent<Player>().ReduceHealth(attackDamage);
+        Vector3 pos = transform.position;
+        pos += transform.right * attackOffset.x;
+        pos += transform.up * attackOffset.y;
+
+        Collider2D colInfo = Physics2D.OverlapCircle(pos, attackRange, playerLayer);
+
+        if(colInfo != null)
+        {
+            colInfo.GetComponent<Player>().ReduceHealth(attackDamage);
+            Animator playerAnim = colInfo.GetComponent<Animator>();
+            playerAnim.SetTrigger("Hurt");
+        }
+           
     }
 
 
