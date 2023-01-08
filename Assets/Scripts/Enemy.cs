@@ -37,6 +37,7 @@ public class Enemy : Health
 
     Rigidbody2D rb;
     Animator anim;
+    public Healthbar healthbar;
 
     private void Start()
     {
@@ -265,9 +266,14 @@ public class Enemy : Health
 
         if(colInfo != null)
         {
-            colInfo.GetComponent<Player>().ReduceHealth(attackDamage);
+            Player playerScript = colInfo.GetComponent<Player>();
+            playerScript.ReduceHealth(attackDamage);
+
             Animator playerAnim = colInfo.GetComponent<Animator>();
             playerAnim.SetTrigger("Hurt");
+
+            // Update Heathbar
+            healthbar.SetHealthBar(playerScript.GetHealth());
         }
            
     }
