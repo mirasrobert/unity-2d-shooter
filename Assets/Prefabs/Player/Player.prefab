@@ -11,14 +11,14 @@ GameObject:
   - component: {fileID: 1337579891264259333}
   - component: {fileID: 1337579891264259332}
   - component: {fileID: 1337579891264259579}
-  - component: {fileID: 1337579891264259334}
   - component: {fileID: 1337579891264259335}
   - component: {fileID: 1337579891264259328}
   - component: {fileID: 1337579891264259329}
   - component: {fileID: 1337579891264259330}
-  m_Layer: 0
+  - component: {fileID: 8025016772254681861}
+  m_Layer: 9
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -108,32 +108,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!61 &1337579891264259334
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1337579891264259578}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.019739151, y: -0.85569245}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4, y: 4}
-    newSize: {x: 0.64, y: 0.64}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.2168455, y: 2.2803664}
-  m_EdgeRadius: 0
 --- !u!50 &1337579891264259335
 Rigidbody2D:
   serializedVersion: 4
@@ -167,8 +141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65d9f08ad4df8bc43bf5eaefa9f52d95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 500
-  jumpForce: 12
+  speed: 510
+  jumpForce: 15
   groundCheck_1: {fileID: 1337579891932822090}
   groundCheck_2: {fileID: 1337579891993784991}
   groundCheck_3: {fileID: 1337579892312278722}
@@ -199,8 +173,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17a73908bbfc7bd408dbc5c5844a7bf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 100
   health: 100
-  deathEffect: {fileID: 0}
+--- !u!70 &8025016772254681861
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337579891264259578}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 4, y: 4}
+  m_Direction: 0
 --- !u!1 &1337579891827743249
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,7 +200,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1337579891827743250}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
@@ -240,7 +230,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1337579891932822090}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GroundCheck[1]
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -270,7 +260,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1337579891993784991}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GroundCheck[2]
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -300,7 +290,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1337579892312278722}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GroundCheck[3]
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -330,7 +320,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1337579892761281415}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GroundCheckHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

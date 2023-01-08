@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 5383886317165153913}
   m_Layer: 10
   m_Name: Skeleton
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -156,7 +156,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &5383886317165153914
 CapsuleCollider2D:
@@ -167,7 +167,7 @@ CapsuleCollider2D:
   m_GameObject: {fileID: 5383886317165153912}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 5372d68b7055c1748a09edb3615fc840, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -189,16 +189,14 @@ MonoBehaviour:
   maxHealth: 100
   health: 100
   player: {fileID: 0}
-  speed: 5
-  isFlipped: 0
+  speed: 3.5
   agroPoint: {fileID: 5383886316907205545}
-  agroRange: 5.36
+  agroRange: 7.83
   playerLayer:
     serializedVersion: 2
     m_Bits: 512
   attackRange: 1.94
   attackDamage: 10
-  attackOffset: {x: 0, y: 0, z: 0}
   attackCooldown: 0.5
   lastAttackTime: 0
   castPos: {fileID: 5383886318665638185}
@@ -217,7 +215,7 @@ GameObject:
   m_Layer: 10
   m_Name: castPos
   m_TagString: Untagged
-  m_Icon: {fileID: 2488908585195742037, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1

@@ -7,9 +7,6 @@ public class Enemy : Health
     public Transform player;
     public float speed = 5f;
 
-    // IF TRUE THEN DEFAULT IS FACING RIGHT
-    public bool isFlipped = false;
-
     public Transform agroPoint;
     public float agroRange = 5f;
     public LayerMask playerLayer;
@@ -17,12 +14,13 @@ public class Enemy : Health
     public float attackRange = 3f;
     bool inRangeOfAttack = false;
     [SerializeField] int attackDamage = 10;
-    public Vector3 attackOffset;
+    Vector3 attackOffset = new Vector3(0f, 0f ,0f);
 
     public float attackCooldown = 0.5f;
-    public float lastAttackTime = 0f;
+    [HideInInspector] public float lastAttackTime = 0f;
 
     bool inAgroRange = false;
+    bool MustChasePlayer = false;
 
     // Enemy Patrol
     public Transform castPos;
@@ -56,7 +54,7 @@ public class Enemy : Health
         {
             PlayerSpotted();
 
-            if (inAgroRange)
+            if (inAgroRange && MustChasePlayer == true)
             {
 
                 Debug.Log("AGRO: TRUE");
@@ -129,39 +127,26 @@ public class Enemy : Health
         }
     }
 
-    public void LookAtPlayer()
-    {
-        Vector3 flipped = transform.localScale;
-        flipped.z *= -1f;
-
-        if (transform.position.x > player.position.x && isFlipped)
-        {
-            transform.localScale = flipped;
-            transform.Rotate(0f, 180f, 0f);
-            isFlipped = false;
-            Debug.Log("FACING LEFT");
-            facingDirection = LEFT;
-        }
-        else if(transform.position.x < player.position.x && !isFlipped)
-        {
-            transform.localScale = flipped;
-            transform.Rotate(0f, 180f, 0f);
-            isFlipped = true;
-            Debug.Log("FACING RIGHT");
-            facingDirection = RIGHT;
-        }
-    }
-
     void PlayerSpotted()
     {
         // Check If Player is in enemy agro range
         if(Vector2.Distance(player.position, rb.position) <= agroRange)
         {
+            // Is Enemy Going To Fall or Close In Edge
             inAgroRange = true;
+
+            if (IsNearEdge())
+            {
+                MustChasePlayer = false;
+            }
+
         } else
         {
             inAgroRange = false;
+            MustChasePlayer = true;
         }
+
+        Debug.Log("MUSTCHASE: " + MustChasePlayer.ToString());
     }
 
     bool IsHittingWall()
